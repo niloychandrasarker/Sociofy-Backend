@@ -16,30 +16,26 @@ public class UserController {
     UserRepository userRepository;
     @Autowired
     UserService userService;
-    @PostMapping("/users")
-    public User createUser(@RequestBody User user) {
-        User savedUser = userService.registerUser(user);
-        return savedUser;
-    }
 
-    @GetMapping("/users")
+
+    @GetMapping("/api/users")
     public List<User> getUser() {
         List<User> users = userRepository.findAll();
         return users;
     }
 
-    @GetMapping("/users/{userid}")
+    @GetMapping("/api/users/{userid}")
     public User getUserById(@PathVariable("userid") Integer id) {
         return userService.findUserById(id);
     }
 
-    @GetMapping("/users/email/{email}")
+    @GetMapping("/api/users/email/{email}")
     public User findUserByEmail(@PathVariable("email") String email) {
         return userService.findUserByEmail(email);
     }
 
 
-    @PutMapping("/users/{userid}")
+    @PutMapping("/api/users/{userid}")
     public User updateUser(@RequestBody User user, @PathVariable("userid") Integer id) throws Exception {
         return userService.updateUser(user, id);
     }
@@ -56,12 +52,12 @@ public class UserController {
 //        return "User with id " + id + " deleted successfully";
 //    }
 
-    @PutMapping("/users/follow/{userId1}/{userId2}")
+    @PutMapping("/api/users/follow/{userId1}/{userId2}")
     public User followUserHandler(@PathVariable("userId1") Integer userId1, @PathVariable("userId2") Integer userId2) throws Exception {
         return userService.followUser(userId1, userId2);
     }
 
-    @GetMapping("/users/search")
+    @GetMapping("/api/users/search")
     public List<User> searchUsers(@RequestParam("query") String query) {
         List<User> users = userService.searchUsers(query);
         return users;

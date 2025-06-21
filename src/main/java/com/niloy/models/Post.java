@@ -15,7 +15,7 @@ public class Post {
     private String image;
     private  String video;
     @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
     private LocalDateTime createdAt;
     @OneToMany
