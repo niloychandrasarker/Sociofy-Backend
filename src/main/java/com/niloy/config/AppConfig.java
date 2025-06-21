@@ -24,6 +24,7 @@ public class AppConfig {
                 .csrf(csrf -> csrf.disable());
         return http.build();
     }
+    @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }

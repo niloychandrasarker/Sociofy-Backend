@@ -4,13 +4,15 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+@Component
 public class JwtProvider {
     private static SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
-    public static String genarateToken(Authentication auth) {
+    public static String generateToken(Authentication auth) {
 
         String jwt = Jwts.builder().setIssuer("codewithniloy")
                 .setIssuedAt(new Date())
