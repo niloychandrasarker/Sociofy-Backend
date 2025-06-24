@@ -19,6 +19,8 @@ public class Post {
     private User user;
     private LocalDateTime createdAt;
     @OneToMany
+    private List<Comment> comments = new ArrayList<>();
+    @OneToMany
 //    @JoinTable(
 //            name = "post_likes",
 //            joinColumns = @JoinColumn(name = "post_id"),
@@ -29,14 +31,15 @@ public class Post {
     public Post() {
     }
 
-    public Post(Integer id, String caption, String video, String image, User user, LocalDateTime createdAt, List<User> liked) {
+    public Post(Integer id, String caption, String image, String video, User user, LocalDateTime createdAt, List<User> liked, List<Comment> comments) {
         this.id = id;
         this.caption = caption;
-        this.video = video;
         this.image = image;
+        this.video = video;
         this.user = user;
         this.createdAt = createdAt;
         this.liked = liked;
+        this.comments = comments;
     }
 
     public Integer getId() {
@@ -91,5 +94,13 @@ public class Post {
     }
     public void setLiked(List<User> liked) {
         this.liked = liked;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

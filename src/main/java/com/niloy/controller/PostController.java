@@ -27,7 +27,7 @@ public class PostController {
         return new ResponseEntity<>(createPost, HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/posts/delete/{postId}")
+    @DeleteMapping("/api/posts/delete/{postId}")
     public ResponseEntity<ApiResponse> deletePost(@PathVariable Integer postId, @RequestHeader("Authorization") String token) {
         User reqUser = userService.findUserByJwt(token);
         String message = postService.deletePost(postId, reqUser.getId());
@@ -35,31 +35,31 @@ public class PostController {
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
-    @GetMapping("/posts/{postId}")
+    @GetMapping("/api/posts/{postId}")
     public ResponseEntity<Post> findPostsByIdHandler(@PathVariable Integer postId) {
 
         Post post = postService.findPostById(postId);
         return new ResponseEntity<Post>(post, HttpStatus.OK);
     }
 
-    @GetMapping("/posts/user/{userId}")
+    @GetMapping("/api/posts/user/{userId}")
     public ResponseEntity<List<Post>> findUserPosts(@PathVariable Integer userId) {
         List<Post> posts = postService.findPostsByUserId(userId);
         return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
     }
 
-    @GetMapping("/posts")
+    @GetMapping("/api/posts")
     public ResponseEntity<List<Post>> findAllPosts() {
         List<Post> posts = postService.findAllPosts();
         return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
     }
-    @PutMapping("/posts/save/{postId}")
+    @PutMapping("/api/posts/save/{postId}")
     public ResponseEntity<Post> savePostHandler(@PathVariable Integer postId, @RequestHeader("Authorization") String token) throws Exception {
         User reqUser = userService.findUserByJwt(token);
         Post post = postService.savePost(postId, reqUser.getId());
         return new ResponseEntity<>(post, HttpStatus.OK); // Changed to HttpStatus.OK for better clarity
     }
-    @PutMapping("/posts/like/{postId}")
+    @PutMapping("/api/posts/like/{postId}")
     public ResponseEntity<Post> likePostHandler(@PathVariable Integer postId, @RequestHeader("Authorization") String token) throws Exception {
         User reqUser = userService.findUserByJwt(token);
         Post post = postService.likePost(postId, reqUser.getId());
