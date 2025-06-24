@@ -1,8 +1,10 @@
 package com.niloy.controller;
 
 import com.niloy.models.Post;
+import com.niloy.models.User;
 import com.niloy.response.ApiResponse;
 import com.niloy.service.PostService;
+import com.niloy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,16 +16,21 @@ import java.util.List;
 public class PostController {
     @Autowired
     PostService postService;
+    @Autowired
+    UserService userService;
 
-    @PostMapping("/posts/user/{userId}")
-    public ResponseEntity<Post> createPost(@RequestBody Post post, @PathVariable Integer userId) throws Exception {
-        Post createPost = postService.createNewPost(post, userId);
+
+    @PostMapping("/api/posts")
+    public ResponseEntity<Post> createPost(@RequestHeader("Authorization") String token, @RequestBody Post post) throws Exception {
+        User reqUser = userService.findUserByJwt(token);
+        Post createPost = postService.createNewPost(post, reqUser.getId());
         return new ResponseEntity<>(createPost, HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/posts/{postId}/user/{userId}")
-    public ResponseEntity<ApiResponse> deletePost(@PathVariable Integer postId, @PathVariable Integer userId) {
-        String message = postService.deletePost(postId, userId);
+    @DeleteMapping("/posts/delete/{postId}")
+    public ResponseEntity<ApiResponse> deletePost(@PathVariable Integer postId, @RequestHeader("Authorization") String token) {
+        User reqUser = userService.findUserByJwt(token);
+        String message = postService.deletePost(postId, reqUser.getId());
         ApiResponse response = new ApiResponse(message, true);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -46,14 +53,16 @@ public class PostController {
         List<Post> posts = postService.findAllPosts();
         return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
     }
-    @PutMapping("/posts/save/{postId}/user/{userId}")
-    public ResponseEntity<Post> savePostHandler(@PathVariable Integer postId, @PathVariable Integer userId) throws Exception {
-        Post post = postService.savePost(postId, userId);
+    @PutMapping("/posts/save/{postId}")
+    public ResponseEntity<Post> savePostHandler(@PathVariable Integer postId, @RequestHeader("Authorization") String token) throws Exception {
+        User reqUser = userService.findUserByJwt(token);
+        Post post = postService.savePost(postId, reqUser.getId());
         return new ResponseEntity<>(post, HttpStatus.OK); // Changed to HttpStatus.OK for better clarity
     }
-    @PutMapping("/posts/like/{postId}/user/{userId}")
-    public ResponseEntity<Post> likePostHandler(@PathVariable Integer postId, @PathVariable Integer userId) throws Exception {
-        Post post = postService.likePost(postId, userId);
+    @PutMapping("/posts/like/{postId}")
+    public ResponseEntity<Post> likePostHandler(@PathVariable Integer postId, @RequestHeader("Authorization") String token) throws Exception {
+        User reqUser = userService.findUserByJwt(token);
+        Post post = postService.likePost(postId, reqUser.getId());
         return new ResponseEntity<>(post, HttpStatus.ACCEPTED);
     }
 }

@@ -1,5 +1,6 @@
 package com.niloy.service;
 
+import com.niloy.config.JwtProvider;
 import com.niloy.models.User;
 import com.niloy.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,21 +45,21 @@ public class UserServiceImplimentation implements UserService {
     }
 
     @Override
-    public User followUser(Integer userId1, Integer userId2) throws Exception {
-        User user1 = findUserById(userId1);
+    public User followUser(Integer reqUserId1, Integer userId2) throws Exception {
+        User reqUser = findUserById(reqUserId1);
         User user2 = findUserById(userId2);
 
-        if (user1.getFollowing().contains(userId2)) {
-            throw new Exception("User " + userId1 + " is already following user " + userId2);
+        if (reqUser.getFollowing().contains(userId2)) {
+            throw new Exception("User " + reqUserId1 + " is already following user " + userId2);
         }
 
-        user1.getFollowing().add(user2.getId());
-        user2.getFollowers().add(user1.getId());
+        reqUser.getFollowing().add(user2.getId());
+        user2.getFollowers().add(reqUser.getId());
 
-        userRepository.save(user1);
+        userRepository.save(reqUser);
         userRepository.save(user2);
 
-        return user1;
+        return reqUser;
     }
 
     @Override
@@ -67,15 +68,30 @@ public class UserServiceImplimentation implements UserService {
 
         if (user1.isEmpty()) {
             throw new RuntimeException("User not found with id: " + id);
+        } else {
+            User existingUser = user1.get();
+
+            if (user.getFirstName() != null) {
+                existingUser.setFirstName(user.getFirstName());
+            }
+
+            if (user.getLastName() != null) {
+                existingUser.setLastName(user.getLastName());
+            }
+
+            if (user.getEmail() != null) {
+                existingUser.setEmail(user.getEmail());
+            }
+
+            if (user.getPassword() != null) {
+                existingUser.setPassword(user.getPassword());
+            }
+            if (user.getGender() != null) {
+                existingUser.setGender(user.getGender());
+            }
+
+            return userRepository.save(existingUser);
         }
-
-        User existingUser = user1.get();
-        existingUser.setFirstName(user.getFirstName());
-        existingUser.setLastName(user.getLastName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setPassword(user.getPassword());
-
-        return userRepository.save(existingUser);
     }
 
     @Override
@@ -84,5 +100,21 @@ public class UserServiceImplimentation implements UserService {
             return userRepository.findAll();
         }
         return userRepository.searchUser(query);
+    }
+
+    @Override
+    public User findUserByJwt(String jwt) {
+        String email = JwtProvider.getEmailFromJwtToken(jwt);
+
+        if (email == null || email.isEmpty()) {
+            throw new RuntimeException("Invalid JWT token: Unable to extract email.");
+        }
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found with email: " + email);
+        }
+
+        return user;
     }
 }

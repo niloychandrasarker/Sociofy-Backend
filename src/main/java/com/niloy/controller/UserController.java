@@ -31,13 +31,17 @@ public class UserController {
 
     @GetMapping("/api/users/email/{email}")
     public User findUserByEmail(@PathVariable("email") String email) {
+
         return userService.findUserByEmail(email);
     }
 
 
-    @PutMapping("/api/users/{userid}")
-    public User updateUser(@RequestBody User user, @PathVariable("userid") Integer id) throws Exception {
-        return userService.updateUser(user, id);
+    @PutMapping("/api/users")
+    public User updateUser( @RequestHeader("Authorization") String token, @RequestBody User user) throws Exception {
+
+       User reqUser = userService.findUserByJwt(token);
+       User updatedUser = userService.updateUser(user, reqUser.getId());
+       return updatedUser;
     }
 
 //    @DeleteMapping("/users/{userid}")
@@ -52,14 +56,25 @@ public class UserController {
 //        return "User with id " + id + " deleted successfully";
 //    }
 
-    @PutMapping("/api/users/follow/{userId1}/{userId2}")
-    public User followUserHandler(@PathVariable("userId1") Integer userId1, @PathVariable("userId2") Integer userId2) throws Exception {
-        return userService.followUser(userId1, userId2);
+    @PutMapping("/api/users/follow/{userId2}")
+    public User followUserHandler(@RequestHeader("Authorization") String token, @PathVariable("userId2") Integer userId2) throws Exception {
+        User reqUser = userService.findUserByJwt(token);
+        return userService.followUser(reqUser.getId(), userId2);
     }
 
     @GetMapping("/api/users/search")
     public List<User> searchUsers(@RequestParam("query") String query) {
         List<User> users = userService.searchUsers(query);
         return users;
+    }
+
+    @GetMapping("/api/users/profile")
+    public  User getUserFromToken(@RequestHeader("Authorization") String token) {
+
+        User user = userService.findUserByJwt(token);
+        user.setPassword(null);
+        return user;
+
+
     }
 }
